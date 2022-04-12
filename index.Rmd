@@ -28,7 +28,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 --- 
 
+# Mais informações sobre mim
 
+Acesse: [Gustavo Duque Thomaz Mourão Elias](info/index.html)
 
 # Visão geral sobre os relatórios {.tabset .tabset-fade}
 

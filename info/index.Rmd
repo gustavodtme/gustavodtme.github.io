@@ -1,0 +1,13 @@
+---
+title: "Gustavo Duque Thomaz Mourão Elias"
+image: "logo.png"
+links:
+  - label: GitHub
+    url: "https://github.com/gustavodtme"
+  - label: Email
+    url: "mailto:gustavodtme@gmail.com"
+output:
+  postcards::jolla
+---
+ 
+Estudante de Engenharia Civil pela Universidade Federal de São João del-Rei, Campus Alto Paraopeba, Ouro Branco, Minas Gerais.
