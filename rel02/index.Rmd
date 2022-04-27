@@ -1,7 +1,7 @@
 ---
 title: "Relatório 02"
-author: "Ben Dêivide"
-date: "12/04/2022"
+author: "Gustavo Duque Thomaz Mourão Elias"
+date: "27/04/2022"
 header-includes:
   - \usepackage{titling}
   - \pretitle{\begin{center}
@@ -30,9 +30,184 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Objetivo
 
-Descrever o objetivo do relatório!
+Descrever o processo de pordução do relatório das aulas da disciplina, abordando os seguintes passos:
+
+- Instalação do Git e cadastro do GitHub;
+- Criação do repositório e clonagem dele à máquina local;
+- Instação dos pacotes `markdown`, `knitr`, `tinytex` e `postcard`;
+- Básico do RMarkdown;
+- "Comitando" mudanças e "empurrando" dados ao repositório  do GitHub;
+- Criando uma página online do repositório;
 
 # Apresentação do relatório
 
-Aqui será o local para apresentar o material sobre o relatório.
+Dado o objetivo do relatório, os pontos feitos anteriormente serão abordados nos subtópicos: 
+
+## Instalação do Git e cadastro no GitHub
+
+### Sobre
+
+O programa Git tem como função rastrear mundanças em arquivos, permitindo sincronização de dados online^[Fonte: [Wikipedia](https://en.wikipedia.org/wiki/Git)]. O GitHub, por sua vez, é a plataforma online para controle, armazenamento e distribuição para os dados que são passados pelo Git.
+
+Por causa de sua natureza colaborativa e aberta, o site é um ambiente ideal para desenvolvimento de códigos e programação e, por causa fator e outros motivos, foi escolhido como o local de arquivamento e apresentação dos relatórios
+
+### Instalação do Git
+
+O link para instalação nos três principais sistemas operacionais no mercado (Windows, MacOS e Linux) pode ser encontrado aqui: <https://git-scm.com/downloads>.
+
+### Criação de conta no GitHub
+
+Para criar uma conta no GitHub, acesse <https://github.com/signup?source=login>. 
+
+## Criação do repositório e clonagem dele à máquina local
+
+Para o processo de clonagem de um repositório feito no GitHub, sigua os seguintes passos
+
+- Para uso do terminal Git no RStudio, vá na barra de ferramentas acima e clique em *Tools* e vá escolhendo as abas e opções a seguir: *RStudio* > *Tools* > *Global Options...* > *Terminal* > *General* > *Shell* > *New Terminal open with*: *Git Bash* > *Apply*;
+
+
+![](terminalgit.png "Opções globais para terminal Git"){width="50%"}
+ 
+- Crie um repositório no GitHub, o qual será o repositório a ser clonado. Na página da conta pessoal. A demanda da classe, nomeio o repositório como `<usuario_conta>.github.io` ou `dicestcomp`;
+ 
+![](github1.png "Nome do repositório do GitHub"){width="100%"}
+
+- Abra o repositório no GitHub. clique no botão *Code* e copie o código HTTPS;
+
+
+![](github2.png "Obtendo o código HTTPS"){width="100%"}
+ - Vá ao RStudio, novamente na barra de ferramentas superior, e clique em *File* e siga: *New Project...* > *Version Control* > *Git* > *Repository URL* > insira o HTTPS do repositório Git.
+ 
+ ![](projeto.png "Obtendo o código HTTPS"){width="50%"}
+ 
+## Instação dos pacotes `markdown`, `knitr`, `tinytex` e `postcard`
+
+### Instalação via console do R
+
+Os métodos de instalação de pacote podem ser instalados pelos métodos demonstrados no Relatório 1. Além deles, há a opção de usar dois comandos para instalar os quatro pacotes simultaneamente:
+
+```{r eval=FALSE}
+
+# declarando pkgs como a concatenação deste conjunto de pacotes
+
+pkgs <- c("rmarkdown", "knitr", "tinytex", "postcard")
+
+# instalando os pacotes
+
+install.packages(pkgs)
+```
+
+### Conteúdo dos pacotes
+
+Cada pacote ajudará na produção do texto dos relatórios, sendo que cada um deles traz funções e estruturas novas possibilitando a criação dos relatórios no R:
+
+- `rmarkdown`: possibilita o uso do Markdown no R, permitindo a criação de textos em HTML;
+
+- `knitr`: permite a geração e visualização dos documentos em Markdown no R;
+
+- `tinytex`: habilita a compilação de documentos em LaTex e impressão em PDF;
+
+- `postcard`:  template em Markdown para fazer um cartão de negócios online;
+
+## Básico do RMarkdown
+
+### Markdown
+
+O Markdown original é uma linguagem de programação de marcação, usada para edição de texto e com a possibilidade de tradução da estrutura gerada para outros tipos de documento como HTML, Word, PDF, etc. O RMarkdown, por sua vez, é a integração desta linguagem ao RStudio, possibilitando a edição de textos dentro desta interface.
+
+Por ser uma linguagem de marcação, o Markdown tenta se aproximar da escrita humana, conferindo-lhe praticidade e intuitividade na hora de formular textos.
+
+### Estruturas de escrita
+
+Nesta seção, serão demonstradas comandos básicos para escrita em Markdown:
+
+- Escrita em itálico: (`*itálico*`) *itálico*
+
+- Escrita em negrito: (`**negrito**`) ou (`_negrito_`) **negrito**
+
+-Nota de rodapé: `palavra^[citação]` Gustavo^[Alguém]
+
+- Links: `[Nome do Link](Link])` [Link](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+
+- Imagem: `![Nome da imagem](Local da imagem){Argumentos extras}`
+
+- Inserindo resultado de objeto no texto "r objeto" **`r mean(1:10)`**
+
+- Listas: `-`. Para fazer sublistas, escreva uma linha abaixo com um `tab` mais o travessão:
+
+  - Exemplo de sublista usando esta sintaxe.
+  
+    - Mais uma sublista nesta sintaxe.
+    
+-Chunks de código: botão verde acima
+
+```{r}
+dados <- (0:10)
+dados
+```
+
+Média: `r mean(dados)`
+
+- Equação:
+  - Começa com a equação sendo colocada entre dois cifrões `$___$`; 
+  
+  - Uso da sintaxe do Latex. Incia-se com a contra-barra `\` e depois o nome do comando. Alguns exemplos:
+    
+    - `\frac{}{}` para expressar uma fração, primeiro argumento numerador e segundo, denominador;
+    - `\int{}` para integral não definida;
+    - `\alpha` para deixar a letra grega alfa. Demais letras gregas pode ser invocadas mas seus nomes devem ser escritos em inglês;
+    
+  
+  Exemplo da escrita demonstrada:
+
+  $X^{h - \alpha} - \int{a\sqrt{\frac{a}{s}}da}$
+
+## “Comitando” mudanças e “empurrando” dados ao repositório do GitHub
+
+Ao editar arquivos do repositório clonado, uma nova janela no terceiro quadrante estará disponível: a janela *Git*.
+
+![](janelagit.png "Terminal Git"){width="80%"}
+Ela indicará arquivos que foram acrescentados e modificados em relação ao reposítório. Para mandar estas mudanças ao repostitório online, deverá feito um "commit" (indicar as mudanças feitas e marcando este ponto de mudança) e "empurrar" ("push") os dados ao repositório. Há duas maneiras de se fazer este processo: via a aba do *Git* no RStudio ou usando o terminal Git
+
+### Via aba *Git*
+
+Na aba *Git*, clique nos "check boxes" dos arquivos os quais se deseja empurrar. Ao os selecionar, clique no botão *Commit*. Com isso abrairá uma nova aba com um quadro branco a direita.
+
+![](commit.png "Aba do commit"){width="80%"}
+
+Descreva as mudanças feitas no repositório neste quadro. Evite acentos ou caracteres como "ç" para não desconfigurar a mensagem ao exportar ao GitHub.
+
+Feito o "commit", clique em *Push* para enviar os dados ao repositório.
+
+### Via terminal
+
+No RStudio, vá ao segundo quadrante e clique em *Terminal*. Insira as seguintes linhas, uma a cada vez:
+
+```github
+# add é o comando de adicionar arquivos ao repositório. O ponto indica que qualque arquivo acrescentado ou modificado será enviado
+
+$ git add .
+
+# coloque o comentário do commit entre as aspas
+
+$ git commit -m "comentario"
+
+# comando para fazer o empurro
+
+$ git push
+```
+
+## Criando uma página online do repositório
+
+Para que o relatório possa ser exibido como página na internet, alguns passos a mais deverá ser tomados.
+
+Primeiramente, o arquivo do Markdown deverá ser salvo com o nome específico de `index` e o arquivo deverá ser compilado para HTML. No primeiro quadrante, clique no "drop´down" do *Knit* e escolha *Knit on HTML*
+
+Ao chegar ao Github, vá ao repositório e clique em *Setting* e vá para a seção *Pages*.
+
+![](pagina.png "Aba do commit"){width="100%"}
+
+Escolha a fonte como `main root` e salve. O site disponibilizará um link e dentro de um breve tempo, a página estará no ar.
+
+
 
