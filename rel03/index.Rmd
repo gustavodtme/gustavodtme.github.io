@@ -422,7 +422,7 @@ plot(dunif(a, 0, 5), xlab="X", ylab="f(x)")
 
 A distribuição normal provavelmente é a mais reconhecida destes modelos. Devido a sua natureza, suas ocorrências e aplicações no mundo real. [Altura, notas de estudante, QI](https://studiousguy.com/real-life-examples-normal-distribution/) são uns dos eventos observados que seguem a este modelo.
 
-Não só isso mas, segundo o Teorema do Limite Central, dada uma distribuição probabilística qualquer, [a medida que o número de amostras se aproxima ao infinito, a distribuição se aproximará à normal](https://sphweb.bumc.bu.edu/otlt/mph-modules/bs/bs704_probability/BS704_Probability12.html).
+Não só isso mas, segundo o Teorema do Limite Central, dada uma distribuição probabilística qualquer, [a medida que o número de elementos em amostras de uma população se aproxima ao infinito, a média delas se aproximará à normal](https://sphweb.bumc.bu.edu/otlt/mph-modules/bs/bs704_probability/BS704_Probability12.html).
 
 Na engenharia civil, ela é utilizada para determinação de resistência do concreto via análise de amostras.
 
@@ -714,7 +714,7 @@ Com `df` representando os graus de liberdade e `ncp` o nível de signifcância d
 </div>
 
 
-## Qui-quadrado  
+## T de Student 
 
 <div class="black">
 
