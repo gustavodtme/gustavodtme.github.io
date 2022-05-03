@@ -64,8 +64,8 @@ alheio ao desenvolvimento da linguagem.
   O primeiro programa instalado, o R em si, consiste-se apenas no terminal e compilador do código escrito. Apesar de ser possível de trabalhar apenas com ele, é um processo que pode ser mais tedioso e imprático.
 
 A Imagem 1 mostra o terminal básico do R:
-
-![](rpuro.png "Imagem do terminal do R operando no Windows 10"){width="50%"}
+  
+  ![](rpuro.png "Imagem do terminal do R operando no Windows 10"){width="50%"}
 
   \n O RStudio é um IDE: um ambiente de desenvolvimento interno integrado, que se consiste em "um software para criar aplicações que combina ferramentas comuns de desenvolvimento em uma única interface gráfica do usuário (GUI)"^[Fonte: [Redhat](https://www.redhat.com/pt-br/topics/middleware/what-is-ide)], facilitando o uso da linguagem, assim como adicionando algumas ferramentes a mais para desenvolvimento de códigos nesta linguagem.
   
