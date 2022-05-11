@@ -1,0 +1,204 @@
+---
+title: "Relatório 04 - Aproximações de distribuições"
+author: "Gustavo Duque Thomaz Mourão Elias"
+date: "08/05/2022"
+header-includes:
+  - \usepackage{titling}
+  - \pretitle{\begin{center}
+    \includegraphics[width=2in,height=2in]{ufsj.png}\LARGE\\}
+  - \posttitle{\end{center}}
+toc-title: "Sumário"
+output:
+  
+  html_document:
+    theme: journal
+    highlight: tango
+    toc: yes
+    number_sections: yes
+    includes:
+      in_header: logo.html
+  pdf_document:
+    
+    toc: yes
+    number_sections: yes
+    fig_caption: true 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.cap = " ")
+```
+--- 
+
+# Objetivo
+
+Apresentar um processos numérico para cálculo de probabilidade de distribuições de variáveis aleatórias e demonstrar o processo via um exemplo na linguagem `R`
+
+
+# Apresentação do relatório
+
+Diante do objetivo do relatório, o relatório irá o dissertar e explanar nas próximas seções:
+
+# Cálculo numérico
+
+Na resolução de questões e problemas matemáticos e físicos, costuma-se tentar os abordar via aplicação de propriedades, desenvolvimento de expressões e obtenção de relações com outras variáveis. [Tal abordagem é denominada como o método analítico e é perfeitamente razoável](https://kotengenharia.com.br/metodos-numericos/) para problemas de baixa complexidade (equações ordinárias, modelagem físico-químicas de modelos simples, etc.)
+
+Tendo como exemplo a próxima equação da distribuição uniforme definida entre $0$ e $5$, querendo-se sua função de probabilidade acumulada:
+
+$$ P(X) = \int_{0}^{x}\frac{1}{5 - 0}dx  $$
+Para uma integral de uma constante, ela será dada pelo produto da variável e constante. Como a integral varia de $0$ a $x$, a probabilidade acumulada desta distribuição será:
+
+$$ P(X) = \frac{x}{5} \ para \ 0 \leq x\leq 5$$
+
+Contudo, este procedimento não é possível para todos os casos em ciências: sistemas de múltiplas e inúmeras variáveis, equações e funções de extrema complexidade, impossibilidade de se isolar as variáveis e obter uma relação única, etc. Para todos as possibilidades,o método analítico pode não ser possível de ser utilizado.
+
+Retomando as distribuições de probabilidade, observe a função densidade da distribuição qui-quadrado:
+
+$$ f(x) = \frac{\Gamma \big(\frac{\upsilon + 1}{2} \big)}{\sqrt{\pi \upsilon} \ \Gamma \big(\frac{\upsilon}{2} \big)} \bigg(1 + \frac{x^2}{\upsilon} \bigg)^{- \frac{\upsilon +1}{2}} $$
+Para se obter a função acumulada desta distribuição, seria necessário a integrar de $0$ (limite inferior imposto pela natureza da função) até $x$. Sem o grau de liberdade $\upsilon$ definido, a função gama $\Gamma$ entraria neste processo.
+
+Para este fim, pode-se abordar este problema usando a análise numérica: [uma área da matemática e computação destinada ao uso de algoritmos para cálculo de variáveis](https://www.britannica.com/science/numerical-analysis).
+
+Por meio deste artíficio, é possível com que o `R` possa calcular a probabilidade acumulada desta função para qualquer valor de variável (acima $0$) e para qualquer valor do grau de liberdade e intervalo de confiança:
+
+```{r}
+# até 2, com 1 grau de liberdade
+
+pchisq(2, 1)
+
+# 0.5, com 19 graus de liberdade
+
+pchisq(0.5, 19)
+
+# 7.45973 com 8 graus
+
+pchisq(7.45973, 8)
+```
+
+# Quadratura Gauss-Legendre
+
+Como objetivo explícito de se demonstrar um *script* que possa realizar estes cálculos, deve-se utilizar um método de integração numérica. Para esta atividade, será usada a Quadratura Gaussiana.
+
+Simplificadamente, este método numérico se utiliaz de somas ponderadas em $s$ pontos para se calcular o resultado aproximado da área de uma certa função. Esta relação pode ser expressa em:
+
+$$ \int_{a}^{b} g(x)dx \approx \sum_{k = 1}^s w_k f(x_k) $$
+
+Em que:
+
+- $a$ e $b$ será o intervalo em que área abaixo da função será calculada;
+
+- $g(x)$ é a função estudada;
+
+- $s$ é o número de pontos da quadratutra;
+
+- $w_k$ é o peso da soma;
+
+- $f(x_k)$ é a função transformada para aquele intervalo.
+
+Quando a função é polinomial, há um número mínimo de pontos que retornará o valor exato da integral. No caso de funções mais complexas, o número de pontos aumenta a precisão da resposta.
+
+O cálculo dos valores dos tais pesos variam de acordo com o polinômio ortogonal adotado para o cálculo. Neste caso, será usado os polinômios de Legendre, definidos em: 
+
+$$ \langle f,g \rangle = \int_{-1}^{1} f(x)g(x)dx $$
+Estes polinômios determinaram os pesos $w_k$ por meio da matriz de Jacobi $J_s$, sendo que os pontos da quadratura serão em função em função dos autolaores $\lambda_k$ desta matriz, e os pesos em função dos autovetores $V_k$.
+
+# Aplicação no R: curva normal
+
+Dado os básicos da quadratura e com auxílio do pacote `SMR`, ela poderá ser aplicada para cálculo de probabilidade de distribuições.
+
+A exemplo, será usada a distribuição normal, devido ao seu amplo uso e complexidade de sua função, dada em:
+
+$$f(x) = \frac{1}{\sigma \sqrt{2 \pi}}e^{-\frac{1}{2}\frac{(x - \mu)^2}{\sigma^2}}, para -\infty \leq x \leq \infty $$
+
+Em que:
+
+- $\sigma$ é o desvio padrão;
+
+- $\mu$ é a média.
+
+A começar, como a quadratura  Gauss-Legendre tem o intervallo de seu polinômio ortogonal (logo, os seus pesos e pontos) definido entre $-1$ e  $1$, e a função está definida entre $-\infty$ e $\infty$, o intervalo da integral deverá ser modificado.
+
+Como se quer a probabilidade acumulada desta função, a transformação necessária seria de:
+
+$$ \int_{-\infty}^{b}f(x) = \int_{-1}^{1} f(t)dx $$
+Para esta transformação, os argumentos da função mudaram para:
+
+$$ \int_{-\infty}^{b}f(x) = \int_{-1}^{1} f\bigg(b + \frac{1+ x_k}{t-x_k} \bigg) \frac{2}{(x_k-1)^2}dx_k $$
+
+Que, ao desenvolver esta expressão na função da curva normal, obtém-se:
+
+$$ f(x_k) = \frac{2}{\sigma \sqrt{2 \pi}(x_k - 1)^2}e^{\Delta} $$
+
+Com $\Delta$ sendo:
+
+$$ \Delta = \bigg[ \frac{b + \mu }{\sigma} +  \frac{1+x_k}{(x_k-1)\sigma} \bigg]^2 $$
+
+Com esta resolução, é possível implementar esta operação no `R` com o pacote `SMR`:
+
+```{r}
+
+# as funções relacionadas a quadratura estão em desenvolvimento ainda no pacote.
+# para as usar, será necessário a sintaxe "SMR:::___"
+
+# xk será um objeto de lista atômica
+# recebendo os valores dos pontos de quadratura e os seus pesos
+# usaremos 8 pontos para uma precisão maior
+
+xk <- SMR:::GaussLegendre(8) 
+
+#pesos
+
+xk$weights
+
+#pontos
+
+xk$nodes
+
+# lim será o limite superior de integração, "b" na equação passada
+
+lim <- -0.5
+
+# criando a função "fxgauss": será a função da gaussiana ajustada ao novo limite de integração
+
+fxgauss <- function(x, b, media, dp) {
+  
+  # cálculo do expoente, chamado de delta anteriormente para simplicidade
+  
+  aux <- (b/dp)+ ((1 + x)/(x-1)*dp) + (media/dp) 
+
+  # cálculo do numerador na função
+  
+  aux2 <- 2*exp(-0.5*aux^2) 
+  
+  # finalização da conta
+  
+  aux2/((2.506628)*(x-1)^2)
+}
+
+# finalmente aplicando a quadratura
+#considere uma distribuicao de media 0, desp. 1 e queremos a probabiliade acumulada em 0.5
+
+sum(xk$weights * fxgauss(xk$nodes, lim, 0, 1) )
+
+# comparação com a função interna do R para cálculo de probabilidade acumulada da normal
+
+pnorm(-0.5, 0, 1)
+
+# calculando o erro absoluto. Com 8 pontos, temos uma precisão até 3 casas decimais
+
+ sum(xk$weights * fxgauss(xk$nodes, lim, 0, 1) ) - pnorm(-0.5, 0, 1)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
