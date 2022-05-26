@@ -1,0 +1,273 @@
+---
+title: "Relatório 06 -Função de moda no R com"
+author: "Gustavo Duque Thomaz Mourão Elias"
+date: "27/05/2022"
+header-includes:
+  - \usepackage{titling}
+  - \pretitle{\begin{center}
+    \includegraphics[width=2in,height=2in]{ufsj.png}\LARGE\\}
+  - \posttitle{\end{center}}
+toc-title: "Sumário"
+output:
+  
+  html_document:
+    theme: journal
+    highlight: tango
+    toc: yes
+    number_sections: yes
+    includes:
+      in_header: logo.html
+  pdf_document:
+    
+    toc: yes
+    number_sections: yes
+    fig_caption: true 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.cap = " ")
+```
+--- 
+
+# Objetivo
+
+Construir um script em R que possa obter a moda de um conjunto de dados com o auxílio do pacote de funções `Leem`
+
+# Apresentação do relatório
+
+Diante do objetivo do relatório, ele será dissertado e explanado nas próximas seções:
+
+## Leem
+
+O pacote `Leem` está sendo desenvolvido na Universidade Federal de São João del Rei e tem o propósito de ser uma ferramenta auxiliar de estudo na disciplina de Estatística. Como ele está em desenvolvimento, foi proposto aos discentes da disciplina de Estatística Computacional que auxiliem em sua construção.
+
+Este pacote traz consigo uma classe de objetos próprio: `leem`. Atualmente, apenas tais objetos podem ser utilizados nos argumentos das funções deste pacote, logo a função de moda terá que trabalhar com estes objetos.
+
+Para conceder um objeto a classe de `leem`, utiliza-se a função `new_leem` com a seguinte sintaxe:
+
+
+```{r}
+library(leem) # carregando o pacote leem
+x <- rbinom(100, 20, 0.4) # gerando uma amostra de números discretos
+
+x <- new_leem(x, variable = "discrete") # o argumento "variable" define o tipo de conjunto de dados gerados
+
+```
+
+Além da função `new_leem`, é importante também destacar a função `tabfreq`, a qual gera uma tabela de dados para o objeto, sendo que tal tabela contém informações como classes e frequências - essenciais para o cálculo de moda.
+
+```{r}
+x <- tabfreq(x)
+
+x # observe os dados gerados por meio desta funcao
+```
+
+## Função por inteiro
+
+O corpo da função pode ser encontrado [neste link](multimodal_leem.R). Caso tenha dúvida sobre algo, refira-se a este script e o acompanhe pelo texto.
+
+## Início da função e proteção
+
+Ao construir a função, o primeiro (e, possivelmente o mais fundamenteal) passo é definir os argumentos da função. NO caso da moda, o primeiro argumento será o conjunto de dados em que se quer saber tal valor. Além dele, foi incluído os seguintes argumentos auxiliares:
+
+- `details`: argumento lógico que definirá se aparecerá mais dados nos resultados além da moda. `FALSE` mostrará apenas a moda nos resultados. `TRUE` mostará a tabela inteira apresentada em `tabfreq`.
+- `na.rm`:  argumento lógico que tratará de resultados inválidos ("NA"). `FALSE`indica que estes dados serão levados em consideração; `TRUE` indicará a função para os desconsiderar na função (ainda não implementado).
+- `rouding`:  argumento numérico para indicar o número de casa decimais.
+ `grouped`: argumento lógico que indicará o procedimento de cálculo para variáveis contínuas: `TRUE` indicará para calcular a moda através dos intervalos de classe obtidos; `FALSE` indicará a função para tratar cada valor registrado como um ponto discreto, sem os agrupar em intervalos (para dados gerados aleatoriamente, tal procedimento costuma não gerar uma moda, visto que a probabilidade de uma máquina obter o mesmo número de 8 ou mais casas decimais em um sorteio é muito baixa, levando a todos os dados a terem frequência igual a 1).
+ 
+ Com isso, levando em consideração que os valores de argumentos impostos na declaração da função serão o padrão, podemos a declarar como:
+ 
+```{r, eval=FALSE}
+mfreq <- function (x, details = FALSE, na.rm = FALSE, rounding = 2, grouped = TRUE) 
+```
+ 
+ Como estes argumentos precisam ter estes valores específicos para funcionar mas o usuário pode colocar qualquer tipo de objeto no argumento, devemos garantir que apenas tais valores possam ser inseridos na função, garantindo seu funcionamento correto.
+ 
+```{r, eval=FALSE}
+  if (!is.numeric(rounding) | rounding < 0) { #verificando se rounding é numérico e maior que zero
+    stop("The 'rounding' argument must be numeric and positive!", 
+         call. = FALSE, domain = "R-leem") # o comando stop termina a função
+  }
+  rounding <- trunc(rounding) #truncado casas decimais no rounding, se houver
+  if (!is.logical(details)) { #verificando se details é lógico
+    stop("The 'details' argument must be logical!", 
+         call. = FALSE, domain = "R-leem")
+  }
+    
+  if (!is.logical(grouped)) { #verificando se grouped é lógico
+    stop("The 'grouped' argument must be logical!", 
+         call. = FALSE, domain = "R-leem")
+  }
+    
+  if (!is.logical(na.rm)) { #verificando se na.rm é lógico
+    stop("The 'na.rm' argument must be logical!", call. = FALSE, 
+         domain = "R-leem")
+  }
+    
+  if (class(x) != "leem") { #verificando se o objeto da função tem classe leem
+    stop("Use the 'new_leem()' function to create an object of class leem!", 
+         call. = FALSE)
+  }
+  if (class(x) == "leem" & is.null(attr(x, "table"))) # identificando se a variaável tenha tabfreq 
+  x <- tabfreq(x) # implementando tabfreq caso ela não tenha
+```
+Por fim, antes de começar os cálculos, é interessante usar os dados obtidos via `tabfreq` para facilitar a execução deste processo. Por isso, antes de todos os cálculos, foi forçada o uso do `tabfreq` no argumento, garantindo que a variável já tenha sido sujeita a esta função.
+
+
+
+## Variáveis qualitativas
+
+Como o `leem` trabalha com variáveis qualitativas, elas deverão ser levadas em consideração. Pela sua natureza, elas naturalmente serão dados discretos e expressas por meio de caracteres. Tendo isso em mente, para identificar objetos `leem` carregando este tipo de dado, basta verificar se ele é discreto e possui caracteres em seus dados brutos.
+
+```{r, eval=FALSE}
+if (attr(x, "variable") == "discrete") { #verificando se a variável é discreta
+    numchar <- is.numeric(x$estat$raw_data) # is.numeric detecta se um objeto é integralmente numérico
+    if (numchar == 0) { #se o valor retornou 0, quer dizer que há caracteres no meio
+```
+
+Para obter a moda de uma amostra qualitativa, basta observar qual é o dado com maior frequência. Contudo, há duas possibilidades que devem ser levantadas ao se implementar um algoritmo deste tipo: 
+
+- Como discutido brevemente ao descrever o argumento `grouped`, se todas os valores da amostra tiverem a mesma frequência, o conjunto não apresentará moda, sendo classificado como amodal;
+
+- Quando houver dois ou mais valores que possuem o mesmo valor de frequência e que ainda são os mais frequentes da amostra, o conjunto será multimodal.
+
+Para conjuntos amodais, uma solução seria comparar a frequência de todos os valores contra um exemplo do mesmo conjunto. Caso todos eles sejam iguais a este valor de exemplo, então se trata de uma distribuição amodal.
+
+A função lógica `all` pode ser empregada a este fim: ela verifica se todos os valores contidos em um objeto obedecem a relação imposta no argumento. Para nosso caso, se for obtido o retorno `TRUE`, a variável auxiliar `mo`- a qual será usada para dispor o valor da moda - assumirá o valor de uma frase indicando que o grupo de dados apresentados é amodal.
+
+```{r, eval=FALSE}
+{ # dentro da condicional do numchar
+  # os valores de frequência dos valores estão anexados em objeto$tabela$Fi
+      if (all(x$tabela$Fi == x$tabela$Fi[1])) { #usando o all para comparar os valores da função entre si
+        mo <- "The data set has no mode!" # resposta armazenada no mo
+      }
+```
+
+Se o conjunto de dados passou nesta checagem,, ele prosseguirá para o cálculo da moda. A este fim, fora empregado a função `which`, a qual retorna a posição de um valor dentro de um vetor. No caso, será pedido a função para procurar a posição que apresenta o maior valor de frequência. Como ela pode retornar mais de um valor de posição caso eles sigam o que foi pedido, conjuntos multimodais poderão ser detectados.
+
+```{r, eval=FALSE}
+else { # condicional complementar do numchar
+        pos <- which(x$tabela$Fi == max(x$tabela$Fi)) #obtendo as posições da moda via Fi e armazenando em pos
+        # os valores da amostra pode ser acessado via objeto
+        mo <- x$tabela$Groups[pos] # retonando a moda via os valores que estao nas posicoes achadas em pos
+```
+
+## Variáveis discretas quantitativas
+
+O procedimento será semelhante para este tipo de variável. Contudo, foi-se tomado um cuidado maior em relação ao retorno da função. Para garantir que o valor da moda seja retornado como um número e que possa ser trabalhada, fora empregada a função `as.numeric`, a qual transforma um objeto caractere em um número.
+
+Além disso, como se trata de variáveis quantitativas, os argumentos `details` e  `rounding` serão implementados na hora de dispor o resultado da função.
+
+Para `rounding`, ela será usada em conjunto com a função nativa `round`, usada para arredondamento de valores. Ela é composta por dois argumentos: valor a ser arredondado  e número de dígitos, sendo que o valor será as modas e o número de dígitos será  `rounding`.
+
+`details`  apenas indicará para uma condicional se é para imprimir o resultado completo via uma lista que será denominada `resume` com três vetores atômicos: `mode` que será a moda; `table` sendo a tabela de dados e `rawdata` como os dados brutos.
+
+```{r, eval=FALSE}
+else { # condicional complementar do discrete
+        pos <- which(x$tabela$Fi == max(x$tabela$Fi))
+        mo <- round(as.numeric(x$tabela$Groups[pos]), rounding) #usando o rounding dentro da funcao round
+      }
+    }
+    resume <- list(mode = mo, table = x$tabela, rawdata = x$estat$raw_data) #lista de valores resume
+    if (details) { #checando se foi pedido detalhes
+      return(resume) #imprime se pediu
+    }
+    else {
+      return(mo) # retorna só mo se não
+    }
+```
+
+## Variáveis contínuas
+
+No caso de variáveis contínuas agrupadas, a moda se dá pela seguinte expressão:
+
+$$ Mo = L_i \ + \frac{\Delta_1}{\Delta_1 + \Delta_2}A $$
+Em que:
+- $Mo$ é a moda;
+- $L_i$ é o valor do limite inferior da classe de maior frequência;
+- $\Delta_1$ é a diferença entre a frequência da moda e a da classe anterior;
+- $\Delta_2$ é a diferença entre a frequência da moda e a da próxima classe;
+- $A$ é a amplitude da classe.
+
+Assim como surgiu os casos de conjuntos amodais e multimodais, há peculiaridades que este cálculo impõe em seu algoritmo:
+
+- No caso da moda ser a primeira classe da amostra, $\Delta_1$ deverá ser zero;
+- Já para o caso de ser a última classe, $Delta_2$ será zero.
+
+Com isso, deverá ser imposta uma condicional para detectar estes casos.
+
+Neste ponto, como os resultados são calculados em vez de extraídos do objeto como nas rotinas anteriores, deverá ser tomada uma medida diferente para armazenar os resultados. Para este fim, `mo` será antecipadamente ajustado como um vetor de comprimento igual ao número de modas. Os resultados serão obtidos por meio de um loop `for`, o qual é acompanhado por uma variável auxiliar `j` que se encarregará de indicar onde no vetor se deve armazenar a variável.
+
+```{r, eval=FALSE}
+ if (attr(x, "variable") == "continuous") {# detectando a variável contínua
+    if (grouped) {#condicional do grouped. Será falado posteriormente
+      pos <- which(x$tabela$Fi == max(x$tabela$Fi)) #obtendo as posições da moda
+      compos <- length(pos) #obtendo o número de modas via lenght
+      mo <- vector(mode = "integer", length = compos) #ajustando mo como vetor
+      j <- 1 #colocando j como 1
+      for(i in pos) { #fazendo um loop for para os valores das posições das frequências
+        if (i == 1) {# condicional para a moda estar na primeira classe
+          aux1 <- 0
+        }
+        else {
+          aux1 <- x$tabela$Fi[i - 1] # cálculo de delta 1
+        }
+        if (i == x$estat$Numero_de_classes) {# condicional para a moda estar na última classe
+          aux2 <- 0
+        }
+        else { # cálculo de delta 2
+          aux2 <- x$tabela$Fi[i + 1]
+        } # cálculo da moda
+        del1 <- x$tabela$Fi[i] - aux1
+        del2 <- x$tabela$Fi[i] - aux2
+        # colocando o resultado na posicao j do vetor mo
+        mo[j] <- x$estat$LI_classes[i] + (del1/(del1 + del2)) * 
+          x$estat$Ampl_clas
+        j <- j + 1 #incrementando j para o próximo loop e assim colocar na posição seguinte de mo
+        
+      } #imprimindo resultado como abordado anteriormente
+      mo <- round(mo, rounding)
+      resume <- list(mode = mo, table = x$tabela, rawdata = x$estat$raw_data)
+      if (details) {
+        return(resume)
+```
+
+
+Como mencionado na seção **2.1**, haverá a diferença de cálculo se `grouped` for `FALSE`. No caso de dados desagrupados, foi discutido que eles serão tratados como dados discretos. Por isso, o cálculo implementado para este caso é semelhante ao cálculo de discretas.
+
+Para poder usar o cálculo anterior, a função força o objeto a se tornar um `leem` discreto. Com isso, o cálculo é feito assim como ocorreu nas seções anteriores a esta.
+
+```{r, eval=FALSE}
+} else { # caso o usuário tenha colocado grouped como falso, o algoritmo virá para cá
+      x <- x$estat$raw_data # ao recolocar os dados brutos na variável, ela perde a classe leem
+      x <- new_leem(x, 1) # colocando-a como leem de novo mas agora como discreta
+      x <- tabfreq(x)
+      if (all(x$tabela$Fi == x$tabela$Fi[1])) { #mesmo procedimento da discreta
+        mo <- "The data set has no mode!"
+      }
+      else {
+        pos <- which(x$tabela$Fi == max(x$tabela$Fi))
+        mo <- round(x$tabela$Groups[pos], rounding)
+      }
+      resume <- list(mode = mo, table = x$tabela, rawdata = x$estat$raw_data)
+      if (details) {
+        return(resume)
+      }
+      else {
+        return(mo)
+      }
+      }
+   
+  }
+} # fim da função
+```
+
+
+
+
+
+
+
+
+
+

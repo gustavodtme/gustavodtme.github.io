@@ -123,5 +123,5 @@ Relatórios desenvolvidos:
 - [Relatório 04 (12/05/2022)](rel04/index.html)
 - Relatório 05 : 
   - [mode_leem.R](rel05/mode_leem.R)
-
+- [Relatório 06 (27/05/2022)](rel06/index.html)
 
