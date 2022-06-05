@@ -1,0 +1,77 @@
+---
+title: "Relatório 07 - Distribuição de Gumbel no `leem`"
+author: "Gustavo Duque Thomaz Mourão Elias"
+date: "06/06/2022"
+header-includes:
+  - \usepackage{titling}
+  - \pretitle{\begin{center}
+    \includegraphics[width=2in,height=2in]{ufsj.png}\LARGE\\}
+  - \posttitle{\end{center}}
+toc-title: "Sumário"
+output:
+  
+  html_document:
+    theme: journal
+    highlight: tango
+    toc: yes
+    number_sections: yes
+    includes:
+      in_header: logo.html
+  pdf_document:
+    
+    toc: yes
+    number_sections: yes
+    fig_caption: true 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.cap = " ")
+```
+--- 
+
+# Objetivo
+
+Construir um script em R que calcule probabilidades da distribuição de Gumbel no R para o pacote `leem`
+
+# Apresentação do relatório
+
+Diante do objetivo do relatório, ele será dissertado e explanado nas próximas seções:
+
+## Distribuição de máximos Gumbel
+
+A distribuição de Gumbel (sigla para *Generalized Extreme Value distribution Type I*) se trata de um modelo de distribuição de variável aleatória contínua. Tal modelo é distinto pelo fato de que ela pode descrever variráveis de comportamento extremo como intensidade de chuva na hidrologiaa.
+
+A sua função de densidade pode ser expressa como:
+
+$$ G(g) = \frac{e^{-(z + e^{-z} )}}{\beta}$$
+Sendo que $z$ é dada pela expressão:
+
+$$ z = \frac{x- \mu}{\beta} $$
+Com as incógnitas nas equações representando:
+
+- $\mu$ é a variável de local;
+
+- $\beta$ é a varíavel de escala, deve ser maior que 0;
+
+## Pacote `manipulate`
+
+Para que o usuário da função possa ter uma interação maior com os resultados e permitindo a melhor visualização da função, fora utilizado o pacote `manipulate`, o qual dispões funções que criam *sliders* que alteram valores de entrada da função, sendo neste caso o valor da variável aleatória de entrada, o parâmetro de local e escala.
+
+O corpo básico da função é dado como
+
+```{r eval = FALSE, echo = TRUE}
+
+manipulate::slider(min, max, initial = min)
+```
+
+Sendo que:
+
+- `min` é o valor mínimo do slider;
+- `max` é o valor máximo do slider;
+- `initial` é o valor de posição inicial do slider, dado como o mínimo por padrão.
+
+Para o uso deste slider, fora colocado proteções para seu uso e do resto da função. Não é possível colocar valores menores que para a escala e, para todas as variáveis, caracteres também são desconsiderados.
+
+## Função em íntegra
+
+A função pode ser visualizada [neste link](prob_leem.R)
