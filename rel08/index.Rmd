@@ -1,0 +1,260 @@
+---
+title: "Relatório 08 - Função `tabfreq` do Leem"
+author: "Gustavo Duque Thomaz Mourão Elias"
+date: "__/06/2022"
+header-includes:
+  - \usepackage{titling}
+  - \pretitle{\begin{center}
+    \includegraphics[width=2in,height=2in]{ufsj.png}\LARGE\\}
+  - \posttitle{\end{center}}
+toc-title: "Sumário"
+output:
+  
+  html_document:
+    theme: journal
+    highlight: tango
+    toc: yes
+    number_sections: yes
+    includes:
+      in_header: logo.html
+  pdf_document:
+    
+    toc: yes
+    number_sections: yes
+    fig_caption: true 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.cap = " ")
+```
+--- 
+
+# Objetivo
+
+Explicar a premissa básica da função `tabfreq` do pacote `leem` e mostrar:
+
+- Uso básico;
+- Argumento `k`;
+- Argumento `ordered`;
+- Erros comuns e correções.
+
+
+# Apresentação do relatório
+
+Diante do objetivo do relatório, ele será dissertado e explanado nas próximas seções:
+
+## `tabfreq`: uso básico
+
+O pacote `leem` está sendo desenvolvido com o objetivo de prover uma melhor visualização de conceitos da estatística a estudantes deste curso. Dentro da disciplina, uma das áreas abordadas é a estatística descritiva: um campo que foca na descrição de população e amostras por meio de coeficientes breves^[Fonte: [Investopedia](https://www.investopedia.com/terms/d/descriptive_statistics.asp)]. Por isso, seu conhecimento básico pode ser de ampla ajuda a estudantes de qualquer curso, especialmente para áreas que se contém com grandes estudos de população como medicina ou psicologia.
+
+O `leem` carrega consigo funções desenhadas para obter dados descritivos de amostra (com novas funções desta área possivelmente sendo implementadas no futuro) e, entre elas, destaca-se a `tabfreq`, cujo objetivo é montar uma tabela de frequências dos dados apresentados.
+
+A tabela de frequêcia é um arranjo de dados que resume as informações apresentadas do conjunto^[Fonte: [UFGRS](https://www.ufrgs.br/probabilidade-estatistica/slides/slides_1/1-2_Descritiva_distribuicoes%20de%20freq.pdf)], tornando o processo de análise deles mais rápida e simples.
+
+Como exemplo, observe a tabela de frequência gerada para o seguinte conjunto de dados:
+
+```{r}
+
+library(leem)
+
+# Criando um conjunto de caracteres aleatorios
+
+x <- sample(letters[1:10], 50, replace = TRUE)
+
+# ATENCAO: para uso do tabfreq, a classe do objeto DEVE SER LEEM. Use o comando new_leem antes (mais sobre isso depois)
+# Como se trata de caracteres, devemos colocar o objeto como discreto no new_leem 
+
+x <- new_leem(x, variable = "discrete")
+
+tabfreq(x)
+
+```
+
+Nesta lista disposta pela função, temos as seguintes informações:
+
+- `groups` representa os nomes das variáveis qualitativas e valores das variáveis discretas quantitativas;
+- `Fi` é a frequência dos dados em número absolutos (para variáveis contínuas, representa o número de elementos contidos na faixa determina pelos intervalos);
+- `Fr`é a frequência relativa daquele grupo (frequência/número de elementos da amostra). Semelhantemente, `Fp` é a frequência relativa já em percentual;
+- `Fac1` e `Fac2` são os valores das frequências acumuladas, organizadas de maneira crescente e decrescente, respectivamente, formando assim as ogivas crescentes e descrescentes. Novamente, `Fac1p`e `Fac2p` são as ogivas relativas crescente e decrescente.
+
+O mesmo princípio se aplica a dados contínuos, com a observação de que os grupos serão dados como intervalos de classes. A quantidade padrão para os intervalos de classe é $\sqrt{n}$ para até 100 elementos e $5*log_{10}{n}$ para mais de 100.
+
+```{r}
+
+# Criando um conjunto de valores a partir da distribuição normal
+
+y <- rnorm(100, 100, 20)
+
+# Colocando a variável como "continuous"  
+  
+y <- new_leem(y, variable = "continuous")
+
+# Observe que a tabela gerada terá 10 intervalos de classe, como discutido anteriormente
+
+tabfreq(y)
+
+```
+
+Além das demais colunas para amostras discretas, a tabela de amostras contínuas carrega a coluna `PM`, representando o valor médio entre o limite inferior e superior do intervalo. 
+
+Após usar o `tabfreq` e o atribuir a variável, é possível chamar a tabela de frequência por meio de `objeto$tabela`:
+
+```{r}
+
+x <- tabfreq(x)
+
+x$tabela
+
+```
+
+
+# Argumento `k`
+
+Como dito anteriormente, o número de classes padrão é dado por uma relação matemática já embutida na função. Contudo, é possível forçar um determinado número de grupos na função `tabfreq`.
+
+Para isso, deve-se inserir o argumento `k` ao chamar a função e declarar quantos classes desejam ser criadas
+
+```{r}
+
+# Fazendo com apenas dois intervalos de classes
+
+tabfreq(y, k = 2)
+
+# Fazendo com 20 intervalos de classe
+
+tabfreq(y, k = 20)
+
+```
+
+# Argumento `ordered`
+
+Para variáveis discretas, o argumento `ordered` possibilita a ordem a qual os dados irão aparecer. Normalmente, elas são organizadas por ordem alfabética para qualitativas e crescente para quantitativas.
+
+Este argumento possui uma natureza mais complexa que `k`: ele deve ser declarado na função com todos os tipos de elementos listados na ordem desejada. Para esclarecimento, observe o exemplo abaixo:
+
+```{r}
+
+# ordenando o objeto x. Listando todos os grupos e na ordem desejada
+
+tabfreq(x, ordered = c('j', 'i', 'h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'))
+
+
+```
+
+
+Com isso, é possível ordenar dados que requerem uma certa ordem para uma análise mais detalhada, como nomes ou dados categorizados.]
+
+
+# Erros comuns e correções
+
+Pela natureza de manipulação de dados, a função apresenta algumas proteções para seu uso. É necessário conhecer suas limitações para seu uso apropriado.
+
+Junto com estas proteções, há ainda alguns *bugs*  no código fonte que podem levar a resultados errados. Os erros reportados foram encontrados com a build disponível no Github na data de 16/06/22
+
+## Geral
+
+- Só podem ser usados objetos com classe `leem` na função;
+
+```{r, error = TRUE}
+
+b <- c(1:10)
+
+tabfreq(b)
+
+
+```
+
+- Objetos com apenas um dado não passam pela função;
+
+```{r, error = TRUE}
+
+v <- 1
+v <- new_leem(v)
+v <- tabfreq(v)
+
+
+```
+
+- Cuidado com declaração do tipo de objetos: se o conjunto for contínuo mas foi declarado como discreto, a tabela de frequência enunciará cada dado como classe;
+
+```{r, error = TRUE}
+
+w <- rnorm(20, 10, 2)
+w <- new_leem(w)
+tabfreq(w)
+
+
+```
+
+## `k`
+
+- O argumento deve ser numérico;
+
+```{r, error = TRUE}
+
+tabfreq(y, k = 'a')
+
+```
+
+- O argumento deve ser positivo e maior que 1;
+
+
+```{r, error = TRUE}
+
+tabfreq(y, k = -1)
+
+```
+
+```{r, error = TRUE}
+
+tabfreq(y, k = 1)
+
+``` 
+
+## `ordered`
+
+- O argumento deve conter os mesmos número de elementos que a tabela original. Caso contrário, parte da tabela se apresentará como vazia *NA*;
+
+```{r, error = TRUE}
+
+x <- sample(letters[1:10], 50, replace = TRUE)
+
+x <- new_leem(x)
+
+tabfreq(x, ordered = c('a', 'b', 'c', 'd', 'e'))
+
+```
+
+- O argumento deve conter os exatos grupos de classe que os dados. Também aparecerá linhas como *NA*;
+
+```{r, error = TRUE}
+
+x <- sample(letters[1:10], 50, replace = TRUE)
+
+x <- new_leem(x)
+
+tabfreq(x, ordered = c('k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 'a'))
+
+```
+
+-  Grupos de caracteres devem ter suas listas organizadas em caracteres. A mesma lógica é válida para argumentos numéricos (lista em números).
+
+
+```{r, error = TRUE}
+
+x <- sample(letters[1:10], 50, replace = TRUE)
+
+x <- new_leem(x)
+
+tabfreq(x, ordered = c(1:10))
+
+```
+
+
+
+
+
+
+
+
+
