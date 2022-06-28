@@ -126,5 +126,5 @@ Relatórios desenvolvidos:
 - [Relatório 06 (27/05/2022)](rel06/index.html)
 - [Relatório 07 (06/06/2022)](rel07/index.html)
 - [Relatório 08 (17/06/2022)](rel08/index.html)
-- [Relatório 09 (24/06/2022)](rel09/lnorm_prob.R)
+- [Relatório 09 (24/06/2022)](rel09/lnorm_prob.R
 

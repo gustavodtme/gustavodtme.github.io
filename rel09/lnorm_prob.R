@@ -45,7 +45,7 @@ p2 <- function(q, dist = "t-student", lower.tail = TRUE,
         manipulate::manipulate(plotcurve(q, meanlog, sdlog),
                                q = manipulate::slider(0, 50, q),
                                meanlog = manipulate::slider(meanlog - 10, meanlog + 10, meanlog ),
-                               sdlog = manipulate::slider(1, sdlog + 10, sdlog))
+                               sdlog = manipulate::slider(0.1, sdlog + 10, sdlog))
         prob <- plnorm(q = q, meanlog, sdlog)
       }
     } else {
@@ -87,7 +87,7 @@ p2 <- function(q, dist = "t-student", lower.tail = TRUE,
         manipulate::manipulate(plotcurve(q, meanlog, sdlog),
                                q = manipulate::slider(0, 50, q),
                                meanlog = manipulate::slider(meanlog - 10, meanlog + 10, meanlog ),
-                               sdlog = manipulate::slider(1, sdlog + 10, sdlog))
+                               sdlog = manipulate::slider(0.1, sdlog + 10, sdlog))
         prob <- plnorm(q = q, meanlog, sdlog, lower.tail = FALSE)
       }
     }
@@ -187,5 +187,4 @@ p2 <- function(q, dist = "t-student", lower.tail = TRUE,
   return(prob)
 }
 
-p2(2,dist = "lognormal", meanlog = 0, sdlog = 1, gui = "rstudio", lower.tail = FALSE)
-
+p2(2,dist = "lognormal", meanlog = 1, sdlog = 0.5, gui = "rstudio", lower.tail = TRUE)
