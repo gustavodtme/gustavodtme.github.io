@@ -127,4 +127,5 @@ Relatórios desenvolvidos:
 - [Relatório 07 (06/06/2022)](rel07/index.html)
 - [Relatório 08 (17/06/2022)](rel08/index.html)
 - [Relatório 09 (24/06/2022)](rel09/lnorm_prob.R)
+- [Relatório 10 (07/07/2022)](rel10/th_leem.R)
 
